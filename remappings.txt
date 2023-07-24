@@ -1,0 +1,15 @@
+ds-test/=lib/forge-std/lib/ds-test/src/
+erc4626-tests/=lib/openzeppelin-contracts/lib/erc4626-tests/
+forge-std/=lib/forge-std/src/
+openzeppelin-contracts/=lib/openzeppelin-contracts/
+prb-math/=lib/prb-math/src/
+prb-test/=lib/prb-math/lib/prb-test/src/
+lib/forge-std:ds-test/=lib/forge-std/lib/ds-test/src/
+lib/openzeppelin-contracts:ds-test/=lib/openzeppelin-contracts/lib/forge-std/lib/ds-test/src/
+lib/openzeppelin-contracts:erc4626-tests/=lib/openzeppelin-contracts/lib/erc4626-tests/
+lib/openzeppelin-contracts:forge-std/=lib/openzeppelin-contracts/lib/forge-std/src/
+lib/openzeppelin-contracts:openzeppelin/=lib/openzeppelin-contracts/contracts/
+lib/prb-math:@prb/test/=lib/prb-math/lib/prb-test/src/
+lib/prb-math:ds-test/=lib/prb-math/lib/forge-std/lib/ds-test/src/
+lib/prb-math:forge-std/=lib/prb-math/lib/forge-std/src/
+lib/prb-math:prb-test/=lib/prb-math/lib/prb-test/src/
