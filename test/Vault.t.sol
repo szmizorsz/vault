@@ -67,4 +67,26 @@ contract VaultTest is Test {
         assertEq(mockToken.balanceOf(secondDepositor), 0);
         assertEq(mockToken.balanceOf(address(vault)), initialDeposit + secondDeposit);
     }
+
+    function testFirstWithdraw() public {
+        uint256 initialDeposit = 2000;
+        mockToken.mint(firstDepositor, initialDeposit);
+
+        vm.startPrank(firstDepositor);
+
+        mockToken.approve(address(vault), initialDeposit);
+        vault.deposit(initialDeposit);
+
+        uint256 withdrawAmount = 1000;
+        vault.withdraw(withdrawAmount);
+
+        vm.stopPrank();
+
+        uint256 expectedFee = 30;
+        assertEq(vault.balanceOf(firstDepositor), initialDeposit - withdrawAmount, "First depositor shares");
+        assertEq(mockToken.balanceOf(firstDepositor), withdrawAmount - expectedFee, "First depositor token balance");
+        assertEq(mockToken.balanceOf(address(vault)), initialDeposit - withdrawAmount, "Vault token balance");
+        assertEq(mockToken.balanceOf(feeCollector), expectedFee, "Fee collector token balance");
+    }
+
 }
