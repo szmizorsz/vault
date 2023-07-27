@@ -1,22 +1,22 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import 'openzeppelin-contracts/contracts/token/ERC20/ERC20.sol';
-import 'openzeppelin-contracts/contracts/token/ERC20/IERC20.sol';
-import { UD60x18, ud } from "prb-math/UD60x18.sol";
+import "openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
+import "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
+import {UD60x18, ud} from "prb-math/UD60x18.sol";
 
 contract Vault is ERC20("VLTS", "VaultShares") {
     IERC20 public immutable token;
     address public feeCollector;
-    uint public feePercentage;
+    uint256 public feePercentage;
 
-    constructor(address _token, address _feeCollector, uint _feePercentage) {
+    constructor(address _token, address _feeCollector, uint256 _feePercentage) {
         token = IERC20(_token);
         feeCollector = _feeCollector;
         feePercentage = _feePercentage;
     }
 
-    function deposit(uint _amount) external {
+    function deposit(uint256 _amount) external {
         /*
         a = amount of token to deposit
         B = balance of tokens in the vault before deposit
@@ -30,7 +30,7 @@ contract Vault is ERC20("VLTS", "VaultShares") {
 
         s = aT / B
         */
-        uint shares;
+        uint256 shares;
         if (totalSupply() == 0) {
             shares = _amount;
         } else {
@@ -41,7 +41,7 @@ contract Vault is ERC20("VLTS", "VaultShares") {
         token.transferFrom(msg.sender, address(this), _amount);
     }
 
-    function withdraw(uint _shares) external {
+    function withdraw(uint256 _shares) external {
         /*
         a = amount of token to receive
         B = balance of tokens in the vault before withdraw
@@ -58,15 +58,14 @@ contract Vault is ERC20("VLTS", "VaultShares") {
         Then the fee is deducted and the fee is sent to a dedicated address
         Otherwise the retained fee would invalidate the proportional calculations
         */
-        uint amountWithFee = (_shares * token.balanceOf(address(this))) / totalSupply();
+        uint256 amountWithFee = (_shares * token.balanceOf(address(this))) / totalSupply();
 
         UD60x18 feePercent = ud(feePercentage);
         uint256 fee = UD60x18.unwrap(ud(amountWithFee).mul(feePercent));
-        uint amount = amountWithFee - fee;
+        uint256 amount = amountWithFee - fee;
 
         _burn(msg.sender, _shares);
         token.transfer(msg.sender, amount);
         token.transfer(feeCollector, fee);
     }
 }
-
