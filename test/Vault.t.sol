@@ -10,7 +10,8 @@ contract VaultTest is Test {
     MockToken public mockToken;
     address public feeCollector = address(12345);
     uint256 public feePercentage = 30000000000000000;
-    address public depositor = address(1);
+    address public firstDepositor = address(1);
+    address public secondDepositor = address(2);
 
     function setUp() public {
         mockToken = new MockToken();
@@ -25,17 +26,45 @@ contract VaultTest is Test {
 
     function testFirstDeposit() public {
         uint256 initialDeposit = 1000;
-        mockToken.mint(depositor, initialDeposit);
+        mockToken.mint(firstDepositor, initialDeposit);
 
-        vm.startPrank(depositor);
+        vm.startPrank(firstDepositor);
 
         mockToken.approve(address(vault), initialDeposit);
         vault.deposit(initialDeposit);
 
         vm.stopPrank();
 
-        assertEq(address(vault.token()), address(mockToken));
-        assertEq(vault.balanceOf(depositor), initialDeposit);
-        assertEq(mockToken.balanceOf(depositor), 0);
+        assertEq(vault.balanceOf(firstDepositor), initialDeposit);
+        assertEq(mockToken.balanceOf(firstDepositor), 0);
+        assertEq(mockToken.balanceOf(address(vault)), initialDeposit);
+    }
+
+    function testSubsequentDeposit() public {
+        uint256 initialDeposit = 1000;
+        mockToken.mint(firstDepositor, initialDeposit);
+
+        vm.startPrank(firstDepositor);
+
+        mockToken.approve(address(vault), initialDeposit);
+        vault.deposit(initialDeposit);
+
+        vm.stopPrank();
+
+        uint256 secondDeposit = 2000;
+        mockToken.mint(secondDepositor, secondDeposit);
+
+        vm.startPrank(secondDepositor);
+
+        mockToken.approve(address(vault), secondDeposit);
+        vault.deposit(secondDeposit);
+
+        vm.stopPrank();
+
+        assertEq(vault.balanceOf(firstDepositor), initialDeposit);
+        assertEq(vault.balanceOf(secondDepositor), secondDeposit);
+        assertEq(mockToken.balanceOf(firstDepositor), 0);
+        assertEq(mockToken.balanceOf(secondDepositor), 0);
+        assertEq(mockToken.balanceOf(address(vault)), initialDeposit + secondDeposit);
     }
 }
